@@ -1,0 +1,7 @@
+# == Class apache::config
+#
+# This class is called from module for service config.
+#
+class apache::config {
+
+}

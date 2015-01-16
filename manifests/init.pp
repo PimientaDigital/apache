@@ -1,41 +1,24 @@
-class apache 
-{      
-    package 
-    { 
-        "apache2":
-            ensure  => present,
-            require => [Exec["manager update"],Package['php5'], Package['php5-dev'], Package['php5-cli']]
-    }
+# == Class: apache
+#
+# Full description of class apache here.
+#
+# === Parameters
+#
+# [*sample_parameter*]
+#   Explanation of what this parameter affects and what it defaults to.
+#
+class apache (
+  $package_name = $::apache::params::package_name,
+  $service_name = $::apache::params::service_name,
+  $file_name = $::apache::params::file_name,
+) inherits ::apache::params{
 
-    file 
-    { 
-        "/etc/apache2/sites-available/local.vhost.conf":
-            ensure  => present,
-            owner => root, group => root,
-            source  => "/var/www/resources/apache/vhost",
-            require => Package['apache2'],
-    }
+  # validate parameters here
 
-    exec 
-    { 
-        "a2ensite localhost":
-            command => "a2ensite local.vhost.conf",
-            require => [Package['apache2'],File["/etc/apache2/sites-available/local.vhost.conf"]],
-    }
-    
-    exec 
-    { 
-        "a2enmod rewrite":
-            command => "a2enmod rewrite",
-            require => Exec["a2ensite localhost"],
-    }
-
-    exec 
-    { 
-        "service apache2 restart":
-            command => "/etc/init.d/apache2 restart",
-            refreshonly => true,
-            subscribe => [Exec["a2ensite localhost"], Exec["a2enmod rewrite"]],
-    }
+  class { '::apache::install': } ->
+  class { '::apache::config': } ~>
+  class { '::apache::service': } ->
+  class { '::apache::file': } ->
+  Class['::apache']
 
 }
