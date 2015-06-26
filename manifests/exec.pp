@@ -5,11 +5,6 @@
 #
 class apache::exec {
 
-  file { $::apache::file_name:
-    ensure  => present,
-    owner => root, group => root,
-    source  => "/var/www/resources/apache/vhost",
-  }
     exec
     {
         "a2ensite localhost":
@@ -22,4 +17,5 @@ class apache::exec {
             command => "a2enmod rewrite",
             require => Exec["a2ensite localhost"],
     }
+
 }
